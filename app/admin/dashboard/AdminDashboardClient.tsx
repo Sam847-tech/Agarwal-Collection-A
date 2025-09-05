@@ -1,5 +1,8 @@
-// app/admin/dashboard/AdminDashboardClient.tsx
 "use client"
+
+import { useSession, signOut } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { useEffect } from "react"
 
 import { AdminSidebar } from "@/components/admin-sidebar"
 import { AdminHeader } from "@/components/admin-header"
@@ -19,8 +22,35 @@ import {
 } from "lucide-react"
 
 export default function AdminDashboardClient() {
-  const orders = useAppStore((state) => state.orders)
+  const { data: session, status } = useSession()
+  const router = useRouter()
 
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login")
+    }
+  }, [status, router])
+
+  if (status === "loading") {
+    return <p className="flex justify-center items-center h-screen">Loading...</p>
+  }
+
+  // Restrict only to your Gmail
+  if (session?.user?.email !== "sambhavarya87@gmail.com") {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <h1 className="text-xl font-bold">🚫 Access Denied</h1>
+        <p>You do not have permission to view this page.</p>
+        <Button onClick={() => signOut({ callbackUrl: "/login" })} className="mt-4">
+          Sign Out
+        </Button>
+      </div>
+    )
+  }
+
+  // Store + mock data
+  const orders = useAppStore((state) => state.orders)
   const totalProducts = mockProducts.length
   const totalOrders = orders.length
   const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0)
