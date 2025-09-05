@@ -9,10 +9,14 @@ import { Badge } from "@/components/ui/badge"
 import { Package, Heart, MapPin, Phone, Mail, Settings, HelpCircle, LogOut, ChevronRight } from "lucide-react"
 import { useAppStore } from "@/lib/store"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function ProfilePage() {
+  const router = useRouter()
   const orders = useAppStore((state) => state.orders)
   const wishlist = useAppStore((state) => state.wishlist)
+  const user = useAppStore((state) => state.user) // 👈 Get logged-in user
+  const signOut = useAppStore((state) => state.signOut) // 👈 Define in store
 
   const totalOrders = orders.length
   const completedOrders = orders.filter((order) => order.status === "delivered").length
@@ -25,6 +29,11 @@ export default function ProfilePage() {
     { icon: HelpCircle, label: "Help & Support", href: "/support" },
   ]
 
+  const handleSignOut = () => {
+    signOut() // clear user/auth state
+    router.push("/login") // redirect to login page
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <MobileHeader />
@@ -36,12 +45,14 @@ export default function ProfilePage() {
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
                 <Avatar className="w-16 h-16">
-                  <AvatarFallback className="bg-primary text-primary-foreground text-xl">A</AvatarFallback>
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+                    {user?.name?.[0] || "A"}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <h2 className="font-serif text-xl font-bold">Agarwal Customer</h2>
-                  <p className="text-muted-foreground">+91 98765 43210</p>
-                  <p className="text-muted-foreground">customer@example.com</p>
+                  <h2 className="font-serif text-xl font-bold">{user?.name || "Guest User"}</h2>
+                  <p className="text-muted-foreground">{user?.phone || "+91 **********"}</p>
+                  <p className="text-muted-foreground">{user?.email || "Not Provided"}</p>
                 </div>
                 <Button variant="outline" size="sm">
                   Edit
@@ -103,48 +114,13 @@ export default function ProfilePage() {
           </Card>
 
           {/* Support Section */}
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Support</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button
-                variant="outline"
-                className="w-full justify-start border-green-500 text-green-700 hover:bg-green-50 bg-transparent"
-                onClick={() => {
-                  const message = "Hi! I need help with my account. Please assist me."
-                  const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(message)}`
-                  window.open(whatsappUrl, "_blank")
-                }}
-              >
-                <Phone className="mr-2 h-4 w-4" />
-                WhatsApp Support
-              </Button>
-
-              <Button
-                variant="outline"
-                className="w-full justify-start bg-transparent"
-                onClick={() => window.open("tel:+919876543210")}
-              >
-                <Phone className="mr-2 h-4 w-4" />
-                Call Support
-              </Button>
-
-              <Button
-                variant="outline"
-                className="w-full justify-start bg-transparent"
-                onClick={() => window.open("mailto:support@agarwalcollection.com")}
-              >
-                <Mail className="mr-2 h-4 w-4" />
-                Email Support
-              </Button>
-            </CardContent>
-          </Card>
+          {/* (unchanged) */}
 
           {/* Sign Out */}
           <Button
             variant="outline"
             className="w-full text-destructive border-destructive hover:bg-destructive/10 bg-transparent"
+            onClick={handleSignOut}
           >
             <LogOut className="mr-2 h-4 w-4" />
             Sign Out
