@@ -25,28 +25,22 @@ export default function AdminDashboardClient() {
   const { data: session, status } = useSession()
   const router = useRouter()
 
-  // Redirect if not authenticated
+  // 🔒 Client-side protection
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/login")
+      router.replace("/login")
+    } else if (status === "authenticated" && session?.user?.role !== "admin") {
+      router.replace("/unauthorized")
     }
-  }, [status, router])
+  }, [status, session, router])
 
   if (status === "loading") {
     return <p className="flex justify-center items-center h-screen">Loading...</p>
   }
 
-  // Restrict only to admins
-  if (session?.user?.role !== "admin") {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <h1 className="text-xl font-bold">🚫 Access Denied</h1>
-        <p>You do not have permission to view this page.</p>
-        <Button onClick={() => signOut({ callbackUrl: "/login" })} className="mt-4">
-          Sign Out
-        </Button>
-      </div>
-    )
+  // ✅ Only show content for admins
+  if (!session || session.user?.role !== "admin") {
+    return null
   }
 
   // Store + mock data
