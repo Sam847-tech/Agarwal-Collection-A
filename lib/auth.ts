@@ -1,6 +1,6 @@
 // lib/auth.ts
-import { type NextAuthOptions } from "next-auth"
 import GoogleProvider from "next-auth/providers/google"
+import type { NextAuthOptions } from "next-auth"
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -11,14 +11,15 @@ export const authOptions: NextAuthOptions = {
   ],
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: "/login", // redirect users to /login if not signed in
+    signIn: "/login", // redirect unauthenticated users to /login
   },
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      // Always redirect to base URL if external URLs are not allowed
-      if (url.startsWith("/")) return `${baseUrl}${url}`
-      else if (new URL(url).origin === baseUrl) return url
-      return baseUrl
+    async session({ session, token }) {
+      // attach user id (if needed)
+      if (session.user) {
+        session.user.id = token.sub
+      }
+      return session
     },
   },
 }
