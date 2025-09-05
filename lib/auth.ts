@@ -1,5 +1,8 @@
+// lib/auth.ts
 import GoogleProvider from "next-auth/providers/google"
 import type { NextAuthOptions } from "next-auth"
+
+const adminEmails = ["sambhavarya87@gmail.com", "another.admin@example.com"]
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -10,24 +13,20 @@ export const authOptions: NextAuthOptions = {
   ],
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
-    signIn: "/login", // redirect unauthenticated users to /login
+    signIn: "/login",
   },
   callbacks: {
-    async jwt({ token }) {
-      // ✅ Assign role during JWT creation
-      if (token.email === "sambhavarya87@gmail.com") {
-        token.role = "admin"
-      } else {
-        token.role = "user"
-      }
-      return token
-    },
     async session({ session, token }) {
       if (session.user) {
         // attach user id
         session.user.id = token.sub
-        // ✅ pull role from token
-        session.user.role = token.role as string
+
+        // assign role
+        if (adminEmails.includes(session.user.email || "")) {
+          session.user.role = "admin"
+        } else {
+          session.user.role = "user"
+        }
       }
       return session
     },
