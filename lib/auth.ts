@@ -13,17 +13,21 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login", // redirect unauthenticated users to /login
   },
   callbacks: {
+    async jwt({ token }) {
+      // ✅ Assign role during JWT creation
+      if (token.email === "sambhavarya87@gmail.com") {
+        token.role = "admin"
+      } else {
+        token.role = "user"
+      }
+      return token
+    },
     async session({ session, token }) {
       if (session.user) {
         // attach user id
         session.user.id = token.sub
-
-        // attach role
-        if (session.user.email === "sambhavarya87@gmail.com") {
-          session.user.role = "admin"
-        } else {
-          session.user.role = "user"
-        }
+        // ✅ pull role from token
+        session.user.role = token.role as string
       }
       return session
     },
