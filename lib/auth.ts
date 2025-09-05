@@ -18,10 +18,9 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async session({ session, token }) {
       if (session.user) {
-        // attach user id
         session.user.id = token.sub
 
-        // assign role
+        // Assign role
         if (adminEmails.includes(session.user.email || "")) {
           session.user.role = "admin"
         } else {
@@ -31,8 +30,8 @@ export const authOptions: NextAuthOptions = {
       return session
     },
 
-    // ✅ always redirect users to /after-login after successful sign in
-    async redirect({ baseUrl }) {
+    // ✅ Always redirect to after-login page
+    async redirect({ url, baseUrl }) {
       return `${baseUrl}/after-login`
     },
   },
