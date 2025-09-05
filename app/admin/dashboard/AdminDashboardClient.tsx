@@ -36,8 +36,8 @@ export default function AdminDashboardClient() {
     return <p className="flex justify-center items-center h-screen">Loading...</p>
   }
 
-  // Restrict only to your Gmail
-  if (session?.user?.email !== "sambhavarya87@gmail.com") {
+  // Restrict only to admins
+  if (session?.user?.role !== "admin") {
     return (
       <div className="flex flex-col items-center justify-center h-screen">
         <h1 className="text-xl font-bold">🚫 Access Denied</h1>
@@ -118,7 +118,7 @@ export default function AdminDashboardClient() {
                           {order.customerInfo.name}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {order.createdAt.toLocaleDateString()}
+                          {new Date(order.createdAt).toLocaleDateString()}
                         </p>
                       </div>
                       <div className="text-right">
