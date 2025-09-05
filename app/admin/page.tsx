@@ -1,16 +1,8 @@
-import { getServerSession } from "next-auth"
+// app/admin/page.tsx
 import { redirect } from "next/navigation"
-import { authOptions } from "../api/auth/[...nextauth]/route"
 
-export default async function AdminPage() {
-  // Get session from NextAuth
-  const session = await getServerSession(authOptions)
-
-  // Redirect to login if not logged in
-  if (!session) {
-    redirect("/login")
-  }
-
-  // If logged in → redirect to dashboard
+export default function AdminPage() {
+  // Middleware already checks authentication
+  // Just redirect /admin → /admin/dashboard
   redirect("/admin/dashboard")
 }
