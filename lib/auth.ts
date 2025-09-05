@@ -30,5 +30,10 @@ export const authOptions: NextAuthOptions = {
       }
       return session
     },
+
+    // ✅ always redirect users to /after-login after successful sign in
+    async redirect({ baseUrl }) {
+      return `${baseUrl}/after-login`
+    },
   },
 }
