@@ -25,7 +25,13 @@ export default function AdminDashboardClient() {
   const { data: session, status } = useSession()
   const router = useRouter()
 
-  // 🔒 Client-side protection
+  // ✅ always call hooks before conditional returns
+  const orders = useAppStore((state) => state.orders)
+  const totalProducts = mockProducts.length
+  const totalOrders = orders.length
+  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0)
+
+  // 🔒 Redirect logic
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/login")
@@ -38,16 +44,9 @@ export default function AdminDashboardClient() {
     return <p className="flex justify-center items-center h-screen">Loading...</p>
   }
 
-  // ✅ Only show content for admins
   if (!session || session.user?.role !== "admin") {
     return null
   }
-
-  // Store + mock data
-  const orders = useAppStore((state) => state.orders)
-  const totalProducts = mockProducts.length
-  const totalOrders = orders.length
-  const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0)
 
   const metrics = [
     { title: "Total Revenue", value: `₹${totalRevenue}`, change: "+12%", icon: IndianRupee },
