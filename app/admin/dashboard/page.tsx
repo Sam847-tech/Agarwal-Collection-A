@@ -1,4 +1,3 @@
-// app/admin/dashboard/page.tsx
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
 import { authOptions } from "@/lib/auth"
@@ -7,13 +6,13 @@ import AdminDashboardClient from "./AdminDashboardClient"
 export default async function AdminDashboardPage() {
   const session = await getServerSession(authOptions)
 
-  // ❌ If no session → login
+  // ❌ If no session → redirect to login
   if (!session) {
     redirect("/login")
   }
 
-  // ❌ If not your Gmail → unauthorized
-  if (session.user?.email !== "sambhavarya87@gmail.com") {
+  // ❌ If not admin → redirect to unauthorized
+  if (session.user?.role !== "admin") {
     redirect("/unauthorized")
   }
 
