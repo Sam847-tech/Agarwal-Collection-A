@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { signOut } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 
@@ -11,12 +12,20 @@ export default function UnauthorizedPage() {
         You don’t have permission to view this page.
       </p>
 
-      <Button 
-        variant="destructive" 
-        onClick={() => signOut({ callbackUrl: "/login" })}
-      >
-        Sign Out
-      </Button>
+      <div className="flex space-x-4">
+        <Button 
+          variant="destructive" 
+          onClick={() => signOut({ callbackUrl: "/login" })}
+        >
+          Sign Out
+        </Button>
+
+        <Link href="/">
+          <Button variant="outline">
+            Go Home
+          </Button>
+        </Link>
+      </div>
     </div>
   )
 }
