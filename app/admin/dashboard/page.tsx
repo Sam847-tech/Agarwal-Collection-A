@@ -6,16 +6,16 @@ import AdminDashboardClient from "./AdminDashboardClient"
 export default async function AdminDashboardPage() {
   const session = await getServerSession(authOptions)
 
-  // ❌ If no session → redirect to login
+  // ❌ No session → redirect to login
   if (!session) {
     redirect("/login")
   }
 
-  // ❌ If not admin → redirect to unauthorized
+  // ❌ Not admin → redirect to unauthorized
   if (session.user?.role !== "admin") {
     redirect("/unauthorized")
   }
 
-  // ✅ If authorized → render client dashboard
+  // ✅ Admin → render dashboard
   return <AdminDashboardClient />
 }
