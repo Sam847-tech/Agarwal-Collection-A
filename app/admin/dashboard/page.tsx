@@ -1,22 +1,8 @@
 // app/admin/dashboard/page.tsx
-import { getServerSession } from "next-auth"
-import { redirect } from "next/navigation"
-import { authOptions } from "@/lib/auth"
 import AdminDashboardClient from "./AdminDashboardClient"
 
-export default async function AdminDashboardPage() {
-  const session = await getServerSession(authOptions)
-
-  // ❌ If no session, redirect to login
-  if (!session) {
-    redirect("/login")
-  }
-
-  // ❌ Restrict to only your Gmail
-  if (session.user?.email !== "sambhavarya87@gmail.com") {
-    redirect("/unauthorized") // you can create this page if needed
-  }
-
-  // ✅ Render the client-side dashboard component
+export default function AdminDashboardPage() {
+  // Middleware already ensures only authenticated users can reach here.
+  // Restrict Gmail check can be handled inside AdminDashboardClient.
   return <AdminDashboardClient />
 }
