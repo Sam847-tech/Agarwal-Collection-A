@@ -5,7 +5,8 @@ import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import "./globals.css"
 
-import SessionProviderWrapper from "./SessionProviderWrapper"  // ✅
+import SessionProviderWrapper from "./SessionProviderWrapper"
+import UserMenu from "@/components/UserMenu"
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -22,7 +23,7 @@ const manrope = Manrope({
 })
 
 export const metadata: Metadata = {
-  title: "Agarwal Collection - Premium Fashion Boutique",
+  title: "Agarwal Collection",
   description:
     "Discover exquisite Sarees, Suits, and Lehengas at Agarwal Collection. Traditional elegance meets modern style.",
   generator: "v0.app",
@@ -36,9 +37,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`font-sans ${playfair.variable} ${manrope.variable}`}>
-        {/* ✅ wrap with client provider */}
         <SessionProviderWrapper>
-          <Suspense fallback={null}>{children}</Suspense>
+          {/* ✅ Fixed Navbar */}
+          <header className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md">
+            <h1 className="text-lg md:text-xl font-bold tracking-wide">
+              Agarwal Collection
+            </h1>
+            <UserMenu />
+          </header>
+
+          {/* ✅ Add top padding so content isn’t hidden behind navbar */}
+          <main className="pt-16">
+            <Suspense fallback={null}>{children}</Suspense>
+          </main>
+
           <Analytics />
         </SessionProviderWrapper>
       </body>
