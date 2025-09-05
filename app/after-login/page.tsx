@@ -1,45 +1,44 @@
+// app/after-login/page.tsx
 "use client"
 
 import { useSession, signOut } from "next-auth/react"
-import { useRouter } from "next/navigation"
 import { useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 
 export default function AfterLoginPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.replace("/login")
-    }
-  }, [status, router])
-
+  // ⏳ While session is loading
   if (status === "loading") {
-    return <p className="flex justify-center items-center h-screen">Loading...</p>
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p>Loading...</p>
+      </div>
+    )
   }
 
-  if (!session) return null
+  // 🔒 If no session → go to login
+  if (!session) {
+    router.replace("/login")
+    return null
+  }
 
+  // 👤 If normal user → skip directly to app
+  if (session.user?.role !== "admin") {
+    router.replace("/")
+    return null
+  }
+
+  // 🛠️ If admin → show choices
   return (
-    <div className="flex flex-col items-center justify-center h-screen space-y-6 text-center">
-      <h1 className="text-2xl font-bold">
-        Welcome, {session.user?.name || "User"} 👋
-      </h1>
-      <p className="text-gray-600">What would you like to do next?</p>
-
-      <div className="flex gap-4">
-        {/* Go to main app */}
+    <div className="flex flex-col items-center justify-center h-screen space-y-4">
+      <h1 className="text-xl font-bold">Welcome, Admin 👋</h1>
+      <p>Where would you like to go?</p>
+      <div className="flex space-x-4">
         <Button onClick={() => router.push("/")}>Go to App</Button>
-
-        {/* Show Admin only if role === admin */}
-        {session.user?.role === "admin" && (
-          <Button variant="outline" onClick={() => router.push("/admin/dashboard")}>
-            Go to Admin
-          </Button>
-        )}
-
-        {/* Sign Out */}
+        <Button onClick={() => router.push("/admin")}>Go to Admin</Button>
         <Button
           variant="destructive"
           onClick={() => signOut({ callbackUrl: "/login" })}
