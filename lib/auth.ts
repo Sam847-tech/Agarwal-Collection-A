@@ -1,4 +1,3 @@
-// lib/auth.ts
 import GoogleProvider from "next-auth/providers/google"
 import type { NextAuthOptions } from "next-auth"
 
@@ -15,9 +14,16 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async session({ session, token }) {
-      // attach user id (if needed)
       if (session.user) {
+        // attach user id
         session.user.id = token.sub
+
+        // attach role
+        if (session.user.email === "sambhavarya87@gmail.com") {
+          session.user.role = "admin"
+        } else {
+          session.user.role = "user"
+        }
       }
       return session
     },
